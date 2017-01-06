@@ -19,7 +19,8 @@ const elements = [
     meta: {
       author: 'Ivan Petrov',
       createdAt: moment().subtract(10, 'weeks').calendar(),
-      updatedAt: moment().subtract(8, 'weeks').calendar()
+      updatedAt: moment().subtract(8, 'weeks').calendar(),
+      count: 3
     }
   },
   {
@@ -35,7 +36,7 @@ const elements = [
       author: 'Peter Petrov',
       createdAt: moment().subtract(2, 'weeks').calendar(),
       updatedAt: moment().subtract(2, 'days').calendar(),
-      count: 6
+      count: 7
     }
   },
   {
@@ -111,7 +112,7 @@ const MetaData = (props) => (
 MetaData.propTypes = {
   author: PropTypes.string,
   createdAt: PropTypes.string,
-  updatedAt: PropTypes.string,
+  updatedAt: PropTypes.string
 };
 
 MetaData.defaultProps = {
@@ -121,20 +122,10 @@ MetaData.defaultProps = {
 };
 
 class Like extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { count: props.count };
-    this.handleClick = bind(this.handleClick, this);
-  }
-
-  handleClick() {
-    this.setState({ count: this.state.count + 1 });
-  }
-
   render() {
+    const { count, handleLikeClick } = this.props;
     return React.createElement(
-      LikeItem,
-      { count: this.state.count, handleClick: this.handleClick }
+      LikeItem, { count, handleLikeClick }
     );
   }
 }
@@ -143,16 +134,12 @@ Like.propTypes = {
   count: PropTypes.number
 };
 
-Like.defaultProps = {
-  count: 0
-};
-
 const LikeItem = (props) => (
   DOM.div(
     null,
     `Likes: ${props.count} `,
     DOM.button(
-      { onClick: props.handleClick },
+      { onClick: props.handleLikeClick },
       ' + '
     )
   )
@@ -163,7 +150,13 @@ const BlogItem = (props) => (
     null,
     React.createElement(Image, props.image),
     React.createElement(TextBox, props.description),
-    React.createElement(Like, props.meta),
+    React.createElement(
+      Like,
+      {
+        count: props.meta.count,
+        handleLikeClick: props.handleLikeClick
+      }
+    ),
     DOM.hr(null),
     React.createElement(MetaData, props.meta),
     DOM.br(null)
@@ -173,11 +166,12 @@ const BlogItem = (props) => (
 BlogItem.propTypes = {
   image: PropTypes.object,
   description: React.PropTypes.objectOf(React.PropTypes.string),
-  meta: React.PropTypes.oneOfType([
-    React.PropTypes.object,
-    React.PropTypes.string,
-    React.PropTypes.number
-  ])
+  meta: React.PropTypes.shape({
+    author: React.PropTypes.string,
+    createdAt: React.PropTypes.string,
+    updatedAt: React.PropTypes.string,
+    count: React.PropTypes.number
+  })
 };
 
 BlogItem.defaultProps = {
@@ -205,7 +199,7 @@ BlogItem.defaultProps = {
 
 
 
-const BlogList = ({ elements }) => (
+const BlogList = ({ elements, handleLikeClick }) => (
   DOM.div(
     null,
     _.map(
@@ -213,7 +207,11 @@ const BlogList = ({ elements }) => (
       (element, key) => (
         React.createElement(
           BlogItem,
-          Object.assign({ key: element.id }, element)
+          Object.assign(
+            { key: element.id },
+            element,
+            { handleLikeClick: () => handleLikeClick(element.id) }
+          )
         )
       )
     )
@@ -224,15 +222,57 @@ class BlogPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = { elements };
+    this.handleLikeClick = bind(this.handleLikeClick, this);
+  }
+
+  handleLikeClick(elementId) {
+    el = _.find(this.state.elements, (o) => o.id == elementId);
+    if(isNaN(el.meta.count)) {
+      el.meta.count = BlogItem.defaultProps.meta.count + 1;
+    }
+    else { el.meta.count += 1; }
+    this.setState({ elements: elements });
   }
 
   render() {
-    const { elements } = this.state;
+    const { elements, handleLikeClick } = this.state;
+    columns = _.map(elements, (e)=> [e.description.text, e.meta.count]);
     return (
-      React.createElement(
-        BlogList,
-        { elements }
+      DOM.div(
+        null,
+        React.createElement(
+          BlogList, { elements, handleLikeClick: this.handleLikeClick }
+        ),
+        React.createElement(
+          PieChart, { columns: columns }
+        )
       )
+    );
+  }
+}
+
+class PieChart extends React.Component {
+  componentDidMount() {
+    this.chart = c3.generate({
+      bindto: ReactDOM.findDOMNode(this.refs.chart),
+      data: {
+        type: 'pie',
+        columns: this.props.columns
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.chart.destroy();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.chart.load(nextProps);
+  }
+
+  render() {
+    return (
+      DOM.div({ ref: "chart"})
     );
   }
 }
