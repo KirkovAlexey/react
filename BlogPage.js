@@ -2,6 +2,65 @@ const { DOM, PropTypes } = React;
 
 const { bind, assign } = _;
 
+const elements = [
+  {
+    id: 0,
+    image: {
+      src: "http://weknowyourdreams.com/images/snow/snow-01.jpg",
+      width: "179px",
+      height: "101px",
+      style: {
+        padding: '5px',
+        margin: '5px',
+        border: '1px solid black'
+      }
+    },
+    description: { text: 'Winter is comming, first' },
+    meta: {
+      author: 'Ivan Petrov',
+      createdAt: moment().subtract(10, 'weeks').calendar(),
+      updatedAt: moment().subtract(8, 'weeks').calendar()
+    }
+  },
+  {
+    id: 1,
+    image: {
+      src: "http://weknowyourdreams.com/images/snow/snow-02.jpg",
+      width: "179px",
+      height: "101px",
+      alt: "Winter"
+    },
+    description: { text: 'Winter is comming, second' },
+    meta: {
+      author: 'Peter Petrov',
+      createdAt: moment().subtract(2, 'weeks').calendar(),
+      updatedAt: moment().subtract(2, 'days').calendar(),
+      count: 6
+    }
+  },
+  {
+    id: 2,
+    image: {
+      src: "http://weknowyourdreams.com/images/snow/snow-03.jpg",
+      width: "179px",
+      height: "101px",
+      alt: "Winter",
+      style: {
+        padding: '5px',
+        margin: '5px',
+        border: '1px solid black'
+      }
+    },
+    description: { text: 'Winter is comming, third' },
+    meta: {
+      author: 'Sidor Petrov',
+      createdAt: moment().subtract(2, 'days').calendar(),
+      updatedAt: moment().subtract(1, 'days').calendar(),
+      count: 32
+    }
+  }
+];
+
 const Image = (props) => (
   DOM.img(props)
 );
@@ -104,10 +163,7 @@ const BlogItem = (props) => (
     null,
     React.createElement(Image, props.image),
     React.createElement(TextBox, props.description),
-    DOM.div(
-      null,
-      React.createElement(Like, props.meta)
-    ),
+    React.createElement(Like, props.meta),
     DOM.hr(null),
     React.createElement(MetaData, props.meta),
     DOM.br(null)
@@ -147,71 +203,41 @@ BlogItem.defaultProps = {
   }
 };
 
-const elements = [
-  {
-    image: {
-      src: "http://weknowyourdreams.com/images/snow/snow-01.jpg",
-      width: "179px",
-      height: "101px",
-      style: {
-        padding: '5px',
-        margin: '5px',
-        border: '1px solid black'
-      }
-    },
-    description: { text: 'Winter is comming, first' },
-    meta: {
-      author: 'Ivan Petrov',
-      createdAt: moment().subtract(10, 'weeks').calendar(),
-      updatedAt: moment().subtract(8, 'weeks').calendar()
-    }
-  },
-  {
-    image: {
-      src: "http://weknowyourdreams.com/images/snow/snow-02.jpg",
-      width: "179px",
-      height: "101px",
-      alt: "Winter"
-    },
-    description: { text: 'Winter is comming, second' },
-    meta: {
-      author: 'Peter Petrov',
-      createdAt: moment().subtract(2, 'weeks').calendar(),
-      updatedAt: moment().subtract(2, 'days').calendar(),
-      count: 6
-    }
-  },
-  {
-    image: {
-      src: "http://weknowyourdreams.com/images/snow/snow-03.jpg",
-      width: "179px",
-      height: "101px",
-      alt: "Winter",
-      style: {
-        padding: '5px',
-        margin: '5px',
-        border: '1px solid black'
-      }
-    },
-    description: { text: 'Winter is comming, third' },
-    meta: {
-      author: 'Sidor Petrov',
-      createdAt: moment().subtract(2, 'days').calendar(),
-      updatedAt: moment().subtract(1, 'days').calendar(),
-      count: 32
-    }
-  }
-];
 
-ReactDOM.render(
+
+const BlogList = ({ elements }) => (
   DOM.div(
     null,
     _.map(
       elements,
       (element, key) => (
-        React.createElement(BlogItem, Object.assign({ key }, element))
+        React.createElement(
+          BlogItem,
+          Object.assign({ key: element.id }, element)
+        )
       )
     )
-  ),
+  )
+);
+
+class BlogPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { elements };
+  }
+
+  render() {
+    const { elements } = this.state;
+    return (
+      React.createElement(
+        BlogList,
+        { elements }
+      )
+    );
+  }
+}
+
+ReactDOM.render(
+  React.createElement(BlogPage),
   document.getElementById('app')
 );
