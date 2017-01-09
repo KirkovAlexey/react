@@ -12,7 +12,7 @@ const BlogItem = (props) => (
   DOM.div(
     null,
     React.createElement(Image, props.image),
-    React.createElement(TextBox, props.desc)
+    React.createElement(TextBox, props.description)
   )
 );
 
@@ -23,25 +23,23 @@ ReactDOM.render(
       BlogItem,
       {
         image: { src: "http://weknowyourdreams.com/images/snow/snow-01.jpg", width: "179px", height: "101px", alt: "Winter" },
-        desc: { text: 'Winter is comming, first' }
+        description: { text: 'Winter is comming, first' }
       }
     ),
     React.createElement(
       BlogItem,
       {
         image: { src: "http://weknowyourdreams.com/images/snow/snow-02.jpg", width: "179px", height: "101px", alt: "Winter" },
-        desc: { text: 'Winter is comming, second' }
+        description: { text: 'Winter is comming, second' }
       }
     ),
     React.createElement(
       BlogItem,
       {
         image: { src: "http://weknowyourdreams.com/images/snow/snow-03.jpg", width: "179px", height: "101px", alt: "Winter" },
-        desc: { text: 'Winter is comming, third' }
+        description: { text: 'Winter is comming, third' }
       }
     )
-  ),  
+  ),
   document.getElementById('app')
 );
-
-
