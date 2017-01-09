@@ -112,7 +112,8 @@ const MetaData = (props) => (
 MetaData.propTypes = {
   author: PropTypes.string,
   createdAt: PropTypes.string,
-  updatedAt: PropTypes.string
+  updatedAt: PropTypes.string,
+  count: React.PropTypes.number
 };
 
 MetaData.defaultProps = {
@@ -164,14 +165,9 @@ const BlogItem = (props) => (
 );
 
 BlogItem.propTypes = {
-  image: PropTypes.object,
-  description: React.PropTypes.objectOf(React.PropTypes.string),
-  meta: React.PropTypes.shape({
-    author: React.PropTypes.string,
-    createdAt: React.PropTypes.string,
-    updatedAt: React.PropTypes.string,
-    count: React.PropTypes.number
-  })
+  image: PropTypes.shape(Image.propTypes),
+  description: PropTypes.objectOf(PropTypes.string),
+  meta: PropTypes.shape(MetaData.propTypes)
 };
 
 BlogItem.defaultProps = {
