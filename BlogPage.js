@@ -115,13 +115,9 @@ const BlogItem = (props) => (
 );
 
 BlogItem.propTypes = {
-  image: PropTypes.object,
-  description: React.PropTypes.objectOf(React.PropTypes.string),
-  meta: React.PropTypes.oneOfType([
-    React.PropTypes.object,
-    React.PropTypes.string,
-    React.PropTypes.number
-  ])
+  image: PropTypes.shape(Image.propTypes),
+  description: PropTypes.objectOf(PropTypes.string),
+  meta: PropTypes.shape(MetaData.propTypes)
 };
 
 BlogItem.defaultProps = {
